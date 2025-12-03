@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -248,6 +248,7 @@ rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+  'tpope/vim-sleuth',
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -283,6 +284,50 @@ require('lazy').setup({
       },
     },
   },
+
+  -- Error Lens alternatif (ringan & bagus)
+  {
+    'folke/trouble.nvim',
+    opts = { mode = 'workspace_diagnostics', auto_open = false },
+    keys = {
+      { '<leader>xx', '<cmd>TroubleToggle<cr>' },
+      { '<leader>xw', '<cmd>TroubleToggle workspace_diagnostics<cr>' },
+    },
+  },
+
+  -- Go essentials (go.nvim — terbaik untuk Go di 2025)
+  {
+    'ray-x/go.nvim',
+    dependencies = { 'ray-x/guihua.lua' },
+    ft = { 'go', 'gomod' },
+    config = function()
+      require('go').setup {
+        lsp_cfg = { capabilities = require('cmp_nvim_lsp').default_capabilities() },
+        lsp_on_attach = function(client, bufnr) end, -- kita pakai LspAttach global di bawah
+      }
+      -- Format + organize imports on save
+      vim.api.nvim_create_autocmd('BufWritePre', {
+        pattern = '*.go',
+        callback = function()
+          require('go.format').goimports()
+        end,
+      })
+    end,
+  },
+  -- Fugitive — Git power di Neovim
+  {
+    'tpope/vim-fugitive',
+    cmd = { 'Git', 'G' },
+    keys = {
+      { '<leader>gs', '<cmd>Git<cr>', desc = 'Git status' },
+      { '<leader>gc', '<cmd>Git commit<cr>', desc = 'Git commit' },
+      { '<leader>gp', '<cmd>Git push<cr>', desc = 'Git push' },
+      { '<leader>gl', '<cmd>Git log --oneline --decorate --graph<cr>', desc = 'Git log' },
+      { '<leader>gd', '<cmd>Gdiffsplit<cr>', desc = 'Git diff split' },
+      { '<leader>gb', '<cmd>Git blame<cr>', desc = 'Git blame' },
+    },
+  },
+  { 'lewis6991/gitsigns.nvim', opts = { signs = { add = { text = '┃' }, change = { text = '┃' }, delete = { text = '▁' } } } },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
@@ -429,7 +474,6 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
-      vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
@@ -672,7 +716,7 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
-        -- gopls = {},
+        gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -681,9 +725,22 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
-        --
-
+        ts_ls = {
+          filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+          settings = {
+            typescripts = {
+              inlayHints = {
+                includeInlayParameterNameHints = 'all',
+                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = true,
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+                includeInlayEnumMemberValueHints = true,
+              },
+            },
+          },
+        },
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -692,6 +749,12 @@ require('lazy').setup({
             Lua = {
               completion = {
                 callSnippet = 'Replace',
+              },
+              workspace = {
+                library = {
+                  unpack(vim.api.nvim_get_runtime_file('', true)),
+                  vim.api.nvim_get_proc,
+                },
               },
               -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
               -- diagnostics = { disable = { 'missing-fields' } },
@@ -720,7 +783,10 @@ require('lazy').setup({
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
-        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
+        ensure_installed = {
+          'tsserver',
+          'gopls',
+        }, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
         handlers = {
           function(server_name)
@@ -768,6 +834,16 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        go = { 'goimports', 'gofumpt' },
+        javascript = { 'prettier' },
+        javascriptreact = { 'prettier' },
+        typescript = { 'prettier' },
+        typescriptreact = { 'prettier' },
+        css = { 'prettier' },
+        html = { 'prettier' },
+        json = { 'prettier' },
+        cfml = { 'cfml-lsp' }, -- CFML LSP bisa format
+        cfc = { 'cfml-lsp' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
