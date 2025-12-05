@@ -346,18 +346,12 @@ require('lazy').setup({
         harpoon.ui:toggle_quick_menu(harpoon:list())
       end, { desc = 'Harpoon: Toggle menu' })
 
-      vim.keymap.set('n', '<leader>1', function()
-        harpoon:list():select(1)
-      end, { desc = 'Harpoon: Go to file 1' })
-      vim.keymap.set('n', '<leader>2', function()
-        harpoon:list():select(2)
-      end, { desc = 'Harpoon: Go to file 2' })
-      vim.keymap.set('n', '<leader>3', function()
-        harpoon:list():select(3)
-      end, { desc = 'Harpoon: Go to file 3' })
-      vim.keymap.set('n', '<leader>4', function()
-        harpoon:list():select(4)
-      end, { desc = 'Harpoon: Go to file 4' })
+      -- Set up keymaps for quick access to files 1-4
+      for i = 1, 4 do
+        vim.keymap.set('n', '<leader>' .. i, function()
+          harpoon:list():select(i)
+        end, { desc = 'Harpoon: Go to file ' .. i })
+      end
 
       -- Toggle previous & next buffers stored within Harpoon list
       vim.keymap.set('n', '<leader>[', function()
