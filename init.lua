@@ -395,7 +395,7 @@ require('lazy').setup({
       }
 
       local dap = require 'dap'
-      local dapui = require 'dap-ui'
+      local dapui = require 'dapui'
 
       -- Optional: pretty UI
       dapui.setup()
