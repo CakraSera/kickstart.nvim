@@ -327,6 +327,40 @@ require('lazy').setup({
       { '<leader>gb', '<cmd>Git blame<cr>', desc = 'Git blame' },
     },
   },
+  {
+    'mfussenegger/nvim-dap',
+    dependencies = {
+      'leoluz/nvim-dap-go', -- THIS IS THE GOAT PLUGIN
+      'rcarriga/nvim-dap-ui',
+      'theHamsta/nvim-dap-virtual-text',
+      'nvim-neotest/nvim-nio',
+    },
+    config = function()
+      require('dap-go').setup {
+        -- Most people want this (debug tests easily)
+        delve = {
+          path = 'dlv',
+          initialize_timeout_sec = 20,
+          port = '${port}',
+          args = {},
+          build_flags = '',
+          -- If you're in a module with multiple main packages
+          cwd = '${workspaceFolder}',
+        },
+      }
+
+      local dap = require 'dap'
+      local dapui = require 'dap-ui'
+
+      -- Optional: pretty UI
+      dapui.setup()
+      dap.listeners.after.event_initialized['dapui_config'] = dapui.open
+      dap.listeners.before.event_terminated['dapui_config'] = dapui.close
+      dap.listeners.before.event_exited['dapui_config'] = dapui.close
+
+      require('nvim-dap-virtual-text').setup()
+    end,
+  },
   { 'lewis6991/gitsigns.nvim', opts = { signs = { add = { text = '┃' }, change = { text = '┃' }, delete = { text = '▁' } } } },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
