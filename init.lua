@@ -328,7 +328,17 @@ require('lazy').setup({
     },
   },
 
-  -- Harpoon 2 — Quick file navigation (ThePrimeagen style)
+  -- Harpoon 2 — Quick file navigation
+  -- Harpoon allows you to quickly mark files and jump between them.
+  -- This is especially useful when working on a project with multiple files you frequently access.
+  --
+  -- Usage:
+  --  1. In a file you want to mark, press `<leader>a` to add it to Harpoon
+  --  2. Press `<C-e>` to view all your marked files in a quick menu
+  --  3. Use `<leader>1-4` to instantly jump to your first 4 marked files
+  --  4. Use `<leader>[` and `<leader>]` to cycle through marked files
+  --
+  -- See `:help harpoon` for more information
   {
     'ThePrimeagen/harpoon',
     branch = 'harpoon2',
