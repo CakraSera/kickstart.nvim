@@ -339,26 +339,6 @@ require('lazy').setup({
       -- REQUIRED
       harpoon:setup()
 
-      -- basic telescope configuration
-      local conf = require('telescope.config').values
-      local function toggle_telescope(harpoon_files)
-        local file_paths = {}
-        for _, item in ipairs(harpoon_files.items) do
-          table.insert(file_paths, item.value)
-        end
-
-        require('telescope.pickers')
-          .new({}, {
-            prompt_title = 'Harpoon',
-            finder = require('telescope.finders').new_table {
-              results = file_paths,
-            },
-            previewer = conf.file_previewer {},
-            sorter = conf.generic_sorter {},
-          })
-          :find()
-      end
-
       vim.keymap.set('n', '<leader>a', function()
         harpoon:list():add()
       end, { desc = 'Harpoon: [A]dd file' })
@@ -386,11 +366,6 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>]', function()
         harpoon:list():next()
       end, { desc = 'Harpoon: Next' })
-
-      -- Telescope integration
-      vim.keymap.set('n', '<leader>fh', function()
-        toggle_telescope(harpoon:list())
-      end, { desc = '[F]ind [H]arpoon files' })
     end,
   },
   {
@@ -492,7 +467,6 @@ require('lazy').setup({
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
-        { '<leader>f', group = '[F]ind' },
       },
     },
   },
