@@ -4,5 +4,22 @@
 return {
   'windwp/nvim-autopairs',
   event = 'InsertEnter',
-  opts = {},
+  opts = {
+    check_ts = true,
+    ts_config = {
+      javascript = { 'template_string' },
+      typescript = { 'template_string' },
+    },
+    disable_filetype = { 'TelescopePrompt' },
+    enable_check_bracket_line = false,
+    fast_wrap = {},
+  },
+  config = function(_, opts)
+    local npairs = require 'nvim-autopairs'
+    npairs.setup(opts)
+
+    local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
+    local cmp = require 'cmp'
+    cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
+  end,
 }
