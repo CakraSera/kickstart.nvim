@@ -314,19 +314,6 @@ require('lazy').setup({
       })
     end,
   },
-  -- Fugitive — Git power di Neovim
-  {
-    'tpope/vim-fugitive',
-    cmd = { 'Git', 'G' },
-    keys = {
-      { '<leader>gs', '<cmd>Git<cr>', desc = 'Git status' },
-      { '<leader>gc', '<cmd>Git commit<cr>', desc = 'Git commit' },
-      { '<leader>gp', '<cmd>Git push<cr>', desc = 'Git push' },
-      { '<leader>gl', '<cmd>Git log --oneline --decorate --graph<cr>', desc = 'Git log' },
-      { '<leader>gd', '<cmd>Gdiffsplit<cr>', desc = 'Git diff split' },
-      { '<leader>gb', '<cmd>Git blame<cr>', desc = 'Git blame' },
-    },
-  },
   {
     'mfussenegger/nvim-dap',
     dependencies = {
