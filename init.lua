@@ -323,34 +323,71 @@ require('lazy').setup({
   {
     'mfussenegger/nvim-dap',
     dependencies = {
-      'leoluz/nvim-dap-go', -- THIS IS THE GOAT PLUGIN
+      'leoluz/nvim-dap-go', -- Best Go DAP plugin
       'rcarriga/nvim-dap-ui',
       'theHamsta/nvim-dap-virtual-text',
       'nvim-neotest/nvim-nio',
+      'mason-org/mason.nvim',
+      'jay-babu/mason-nvim-dap.nvim',
+    },
+    keys = {
+      { '<F5>', function() require('dap').continue() end, desc = 'Debug: Start/Continue' },
+      { '<F1>', function() require('dap').step_into() end, desc = 'Debug: Step Into' },
+      { '<F2>', function() require('dap').step_over() end, desc = 'Debug: Step Over' },
+      { '<F3>', function() require('dap').step_out() end, desc = 'Debug: Step Out' },
+      { '<leader>b', function() require('dap').toggle_breakpoint() end, desc = 'Debug: Toggle Breakpoint' },
+      { '<leader>B', function() require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ') end, desc = 'Debug: Set Conditional Breakpoint' },
+      { '<F7>', function() require('dapui').toggle() end, desc = 'Debug: Toggle DAP UI' },
+      { '<leader>dt', function() require('dap-go').debug_test() end, desc = 'Debug: [D]ebug Go [T]est' },
+      { '<leader>dl', function() require('dap-go').debug_last_test() end, desc = 'Debug: [D]ebug [L]ast Go Test' },
     },
     config = function()
+      local dap = require 'dap'
+      local dapui = require 'dapui'
+
+      -- Mason-nvim-dap setup for automatic installation of debug adapters
+      require('mason-nvim-dap').setup {
+        automatic_installation = true,
+        handlers = {},
+        ensure_installed = { 'delve' },
+      }
+
+      -- Go-specific DAP setup with Delve
       require('dap-go').setup {
-        -- Most people want this (debug tests easily)
         delve = {
           path = 'dlv',
           initialize_timeout_sec = 20,
           port = '${port}',
           args = {},
           build_flags = '',
-          -- If you're in a module with multiple main packages
-          cwd = '${workspaceFolder}',
+          detached = vim.fn.has 'win32' == 0,
         },
       }
 
-      local dap = require 'dap'
-      local dapui = require 'dapui'
+      -- DAP UI setup with icons
+      dapui.setup {
+        icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
+        controls = {
+          icons = {
+            pause = '⏸',
+            play = '▶',
+            step_into = '⏎',
+            step_over = '⏭',
+            step_out = '⏮',
+            step_back = 'b',
+            run_last = '▶▶',
+            terminate = '⏹',
+            disconnect = '⏏',
+          },
+        },
+      }
 
-      -- Optional: pretty UI
-      dapui.setup()
+      -- Auto open/close DAP UI
       dap.listeners.after.event_initialized['dapui_config'] = dapui.open
       dap.listeners.before.event_terminated['dapui_config'] = dapui.close
       dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
+      -- Virtual text for debugging
       require('nvim-dap-virtual-text').setup()
     end,
   },
@@ -419,6 +456,7 @@ require('lazy').setup({
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { '<leader>d', group = '[D]ebug' },
       },
     },
   },
