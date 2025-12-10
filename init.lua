@@ -353,6 +353,8 @@ require('lazy').setup({
       }
 
       -- Go-specific DAP setup with Delve
+      -- On Windows delve must be run attached or it crashes.
+      local is_windows = vim.fn.has('win32') == 1
       require('dap-go').setup {
         delve = {
           path = 'dlv',
@@ -360,7 +362,7 @@ require('lazy').setup({
           port = '${port}',
           args = {},
           build_flags = '',
-          detached = vim.fn.has 'win32' == 0,
+          detached = not is_windows,
         },
       }
 
