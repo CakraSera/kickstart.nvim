@@ -20,8 +20,10 @@ return {
 
     local cmp_status_ok, cmp = pcall(require, 'cmp')
     if cmp_status_ok then
-      local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
-      cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
+      local cmp_autopairs_status_ok, cmp_autopairs = pcall(require, 'nvim-autopairs.completion.cmp')
+      if cmp_autopairs_status_ok then
+        cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
+      end
     end
   end,
 }
