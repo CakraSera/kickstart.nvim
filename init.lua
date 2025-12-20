@@ -331,15 +331,69 @@ require('lazy').setup({
       'jay-babu/mason-nvim-dap.nvim',
     },
     keys = {
-      { '<F5>', function() require('dap').continue() end, desc = 'Debug: Start/Continue' },
-      { '<F1>', function() require('dap').step_into() end, desc = 'Debug: Step Into' },
-      { '<F2>', function() require('dap').step_over() end, desc = 'Debug: Step Over' },
-      { '<F3>', function() require('dap').step_out() end, desc = 'Debug: Step Out' },
-      { '<leader>b', function() require('dap').toggle_breakpoint() end, desc = 'Debug: Toggle Breakpoint' },
-      { '<leader>B', function() require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ') end, desc = 'Debug: Set Conditional Breakpoint' },
-      { '<F7>', function() require('dapui').toggle() end, desc = 'Debug: Toggle DAP UI' },
-      { '<leader>dt', function() require('dap-go').debug_test() end, desc = 'Debug: [D]ebug Go [T]est' },
-      { '<leader>dl', function() require('dap-go').debug_last_test() end, desc = 'Debug: [D]ebug [L]ast Go Test' },
+      {
+        '<F5>',
+        function()
+          require('dap').continue()
+        end,
+        desc = 'Debug: Start/Continue',
+      },
+      {
+        '<F1>',
+        function()
+          require('dap').step_into()
+        end,
+        desc = 'Debug: Step Into',
+      },
+      {
+        '<F2>',
+        function()
+          require('dap').step_over()
+        end,
+        desc = 'Debug: Step Over',
+      },
+      {
+        '<F3>',
+        function()
+          require('dap').step_out()
+        end,
+        desc = 'Debug: Step Out',
+      },
+      {
+        '<leader>b',
+        function()
+          require('dap').toggle_breakpoint()
+        end,
+        desc = 'Debug: Toggle Breakpoint',
+      },
+      {
+        '<leader>B',
+        function()
+          require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ')
+        end,
+        desc = 'Debug: Set Conditional Breakpoint',
+      },
+      {
+        '<F7>',
+        function()
+          require('dapui').toggle()
+        end,
+        desc = 'Debug: Toggle DAP UI',
+      },
+      {
+        '<leader>dt',
+        function()
+          require('dap-go').debug_test()
+        end,
+        desc = 'Debug: [D]ebug Go [T]est',
+      },
+      {
+        '<leader>dl',
+        function()
+          require('dap-go').debug_last_test()
+        end,
+        desc = 'Debug: [D]ebug [L]ast Go Test',
+      },
     },
     config = function()
       local dap = require 'dap'
@@ -354,7 +408,7 @@ require('lazy').setup({
 
       -- Go-specific DAP setup with Delve
       -- On Windows delve must be run attached or it crashes.
-      local is_windows = vim.fn.has('win32') == 1
+      local is_windows = vim.fn.has 'win32' == 1
       require('dap-go').setup {
         delve = {
           path = 'dlv',
